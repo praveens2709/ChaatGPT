@@ -1,2 +1,1 @@
 # ChaatGPT
-# ChaatGPT
