@@ -18,10 +18,29 @@ export function formatDate(dateStr) {
 }
 
 export function groupChatsByDate(chats) {
-    return chats.reduce((groups, chat) => {
-        const label = formatDate(chat.date);
-        if (!groups[label]) groups[label] = [];
-        groups[label].push(chat);
-        return groups;
-    }, {});
-}
+    const groups = {};
+  
+    chats.forEach((chat) => {
+      const date = new Date(chat.createdAt);
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+  
+      let label = date.toDateString();
+  
+      if (date.toDateString() === today.toDateString()) {
+        label = "Today";
+      } else if (date.toDateString() === yesterday.toDateString()) {
+        label = "Yesterday";
+      }
+  
+      if (!groups[label]) {
+        groups[label] = [];
+      }
+  
+      groups[label].push(chat);
+    });
+  
+    return groups;
+  }
+  

@@ -28,7 +28,6 @@ export async function POST(req) {
     const data = await response.json();
     console.log("Gemini raw response:", JSON.stringify(data, null, 2));
 
-    // Handle multiple possible response structures
     let reply = "No response";
 
     if (

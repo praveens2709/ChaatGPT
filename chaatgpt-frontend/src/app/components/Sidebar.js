@@ -4,31 +4,33 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { BiEdit, BiSearch } from "react-icons/bi";
-import { groupChatsByDate } from "./functions";
-
-const chatList = [
-  { id: "chat1", title: "My First Chat", date: "2025-04-07T10:15:00" },
-  { id: "chat2", title: "Shopping Ideas", date: "2025-04-06T15:30:00" },
-  { id: "chat3", title: "Old Notes", date: "2025-03-28T09:00:00" },
-];
+import { createChat } from "../api/gemini/chatService";
+import { useChatContext } from "../contexts/chatContext";
 
 export default function Sidebar({ onClose }) {
+  const { groupedChats, fetchChats } = useChatContext();
   const [theme, setTheme] = useState("light");
-  const [groupedChats, setGroupedChats] = useState({});
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleNewChat = () => {
-    const newId = "chat" + Date.now();
-    router.push(`/chat/${newId}`);
+  const handleNewChat = async () => {
+    try {
+      const newChat = await createChat();
+      await fetchChats();
+      router.push(`/chat/${newChat._id}`);
+    } catch (err) {
+      console.error("Error creating new chat", err);
+    }
   };
 
   useEffect(() => {
-    const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+    const currentTheme =
+      document.documentElement.getAttribute("data-theme") || "light";
     setTheme(currentTheme);
 
     const observer = new MutationObserver(() => {
-      const updatedTheme = document.documentElement.getAttribute("data-theme");
+      const updatedTheme =
+        document.documentElement.getAttribute("data-theme");
       setTheme(updatedTheme || "light");
     });
 
@@ -38,11 +40,6 @@ export default function Sidebar({ onClose }) {
     });
 
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const grouped = groupChatsByDate(chatList);
-    setGroupedChats(grouped);
   }, []);
 
   const logoSrc = theme === "dark" ? "/light-logo.png" : "/dark-logo.png";
@@ -80,29 +77,40 @@ export default function Sidebar({ onClose }) {
       </div>
 
       <div className="overflow-auto flex-grow-1 ps-4 pe-3 py-1">
-        {Object.entries(groupedChats).map(([label, chats]) => (
-          <div key={label} className="mb-3">
-            <div className="small mb-2" style={{ color: "var(--muted-color)" }}>
-              {label}
-            </div>
-            {chats.map((chat) => {
-              const isActive = pathname.includes(chat.id);
-              return (
-                <div
-                  key={chat.id}
-                  className={`rounded-3 px-2 py-2 ${isActive ? "chat-active" : "chat-hover"}`}
-                  style={{
-                    cursor: "pointer",
-                    color: "var(--text-color)",
-                  }}
-                  onClick={() => router.push(`/chat/${chat.id}`)}
-                >
-                  {chat.title}
-                </div>
-              );
-            })}
+        {Object.keys(groupedChats).length === 0 ? (
+          <div className="text-muted small mt-3">
+            No chats yet. Start a new one!
           </div>
-        ))}
+        ) : (
+          Object.entries(groupedChats).map(([label, chats]) => (
+            <div key={label} className="mb-3">
+              <div
+                className="small mb-2"
+                style={{ color: "var(--muted-color)" }}
+              >
+                {label}
+              </div>
+              {chats.map((chat) => {
+                const isActive = pathname.includes(chat._id);
+                return (
+                  <div
+                    key={chat._id}
+                    className={`rounded-3 px-2 py-2 ${
+                      isActive ? "chat-active" : "chat-hover"
+                    }`}
+                    style={{
+                      cursor: "pointer",
+                      color: "var(--text-color)",
+                    }}
+                    onClick={() => router.push(`/chat/${chat._id}`)}
+                  >
+                    {chat.title || "Untitled"}
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

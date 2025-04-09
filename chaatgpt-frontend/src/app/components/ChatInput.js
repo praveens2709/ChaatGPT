@@ -13,6 +13,13 @@ export default function ChatInput({ onSend }) {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendClick();
+    }
+  };
+
   return (
     <div
       className="p-3 py-4 d-flex align-items-center rounded-4"
@@ -25,8 +32,9 @@ export default function ChatInput({ onSend }) {
         rows={1}
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="me-2 flex-grow-1 bg-transparent border-0 form-control"
-        placeholder="Type your message..."
+        placeholder="Ask anything"
         style={{
           minHeight: "2.5em",
           resize: "none",
