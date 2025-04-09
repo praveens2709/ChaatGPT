@@ -1,0 +1,59 @@
+/* globals.css */
+@import "./styles/variables.css";
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.border-header{
+  border-left: 1px solid #575757;
+  border-bottom: 1px solid #575757;
+}
+
+.px-10{
+  padding-left: 10rem;
+  padding-right: 10rem;
+}
+
+input, textarea{
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-color) !important;
+  opacity: 0.4 !important;
+}
+
+.send-icon:hover {
+  background-color: var(--hover-color) !important;
+}
+
+.chat-header{
+  padding: 14px 0;
+}
+
+.chat-hover:hover {
+  background-color: var(--secondary-color);
+}
+
+.chat-active {
+  background-color: var(--input-color);
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-grow: 1;
+}

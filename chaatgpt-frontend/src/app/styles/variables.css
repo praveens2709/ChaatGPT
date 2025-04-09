@@ -1,0 +1,19 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --border-color: #e0e0e0;
+  --secondary-color: #f8f8f8;
+  --input-color: #e0e0e0;
+  --hover-color: #676767;
+  --muted-color: #6c757d;
+}
+
+[data-theme="dark"] {
+  --bg-color: #131313;
+  --text-color: #ffffff;
+  --border-color: #474747;
+  --secondary-color: #242424;
+  --input-color: #424242;
+  --hover-color: #cacaca;
+  --muted-color: #adb5bd;
+}
