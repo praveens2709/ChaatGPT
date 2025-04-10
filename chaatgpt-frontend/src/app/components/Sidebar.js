@@ -4,19 +4,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { BiEdit, BiSearch } from "react-icons/bi";
+import { Spinner } from "react-bootstrap";
 import { createChat } from "../api/gemini/chatService";
 import { useChatContext } from "../contexts/chatContext";
 
 export default function Sidebar({ onClose }) {
-  const { groupedChats, fetchChats } = useChatContext();
+  const { groupedChats } = useChatContext();
   const [theme, setTheme] = useState("light");
+  const [hasInitialized, setHasInitialized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   const handleNewChat = async () => {
     try {
       const newChat = await createChat();
-      await fetchChats();
       router.push(`/chat/${newChat._id}`);
     } catch (err) {
       console.error("Error creating new chat", err);
@@ -41,6 +42,12 @@ export default function Sidebar({ onClose }) {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!hasInitialized && groupedChats) {
+      setHasInitialized(true);
+    }
+  }, [groupedChats]);
 
   const logoSrc = theme === "dark" ? "/light-logo.png" : "/dark-logo.png";
 
@@ -77,8 +84,19 @@ export default function Sidebar({ onClose }) {
       </div>
 
       <div className="overflow-auto flex-grow-1 ps-4 pe-3 py-1">
-        {Object.keys(groupedChats).length === 0 ? (
-          <div className="text-muted small mt-3">
+        {!hasInitialized ? (
+          <div
+            className="d-flex justify-content-center pt-3"
+            style={{ height: "100%" }}
+          >
+            <Spinner
+              animation="border"
+              style={{ color: "var(--muted-color)" }}
+              size="sm"
+            />
+          </div>
+        ) : Object.keys(groupedChats).length === 0 ? (
+          <div className="small mt-3" style={{ color: "var(--muted-color)" }}>
             No chats yet. Start a new one!
           </div>
         ) : (

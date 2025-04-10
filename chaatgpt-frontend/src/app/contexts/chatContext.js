@@ -12,7 +12,8 @@ export function ChatProvider({ children }) {
   const fetchChats = async () => {
     try {
       const chats = await getChats();
-      const grouped = groupChatsByDate(chats);
+      const filtered = chats.filter(chat => chat.messages.length > 0);
+      const grouped = groupChatsByDate(filtered);
       setGroupedChats(grouped);
     } catch (err) {
       console.error("Error fetching chats", err);

@@ -7,11 +7,8 @@ import MessageBubble from "../../components/MessageBubble";
 import Sidebar from "../../components/Sidebar";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  getChat,
-  updateChat,
-  createChat,
-} from "../../api/gemini/chatService";
+import { getChat, updateChat, createChat } from "../../api/gemini/chatService";
+import { useChatContext } from "../../contexts/chatContext";
 
 export default function ChatPage() {
   const { chatId } = useParams();
@@ -22,6 +19,7 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showGreeting, setShowGreeting] = useState(true);
   const [currentChatId, setCurrentChatId] = useState(chatId);
+  const { fetchChats } = useChatContext();
 
   useEffect(() => {
     const fetchChat = async () => {
@@ -51,9 +49,8 @@ export default function ChatPage() {
 
   const handleSend = async (text) => {
     const userMsg = { role: "user", content: text };
-  
     let updatedMessages;
-  
+
     try {
       if (currentChatId === "new") {
         const newChat = await createChat();
@@ -63,26 +60,24 @@ export default function ChatPage() {
       } else {
         updatedMessages = [...messages, userMsg];
       }
-  
+
       setMessages(updatedMessages);
       setIsTyping(true);
       setShowGreeting(false);
-  
+
       const res = await fetch("/api/gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages }),
       });
-  
+
       const data = await res.json();
       const aiMsg = { role: "ai", content: data.reply };
       const finalMessages = [...updatedMessages, aiMsg];
       setMessages(finalMessages);
-  
-      await updateChat(
-        currentChatId === "new" ? newChat._id : currentChatId,
-        finalMessages
-      );
+
+      await updateChat(currentChatId, finalMessages);
+      await fetchChats();
     } catch (err) {
       console.error("Error sending message:", err);
       setMessages((prev) => [
@@ -92,7 +87,7 @@ export default function ChatPage() {
     } finally {
       setIsTyping(false);
     }
-  };  
+  };
 
   return (
     <>
@@ -184,5 +179,3 @@ export default function ChatPage() {
     </>
   );
 }
-
-
