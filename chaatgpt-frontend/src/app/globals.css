@@ -14,17 +14,18 @@ body {
   color: var(--text-color);
 }
 
-.border-header{
+.border-header {
   border-left: 1px solid #575757;
   border-bottom: 1px solid #575757;
 }
 
-.px-10{
+.px-10 {
   padding-left: 10rem;
   padding-right: 10rem;
 }
 
-input, textarea{
+input,
+textarea {
   box-shadow: none !important;
   outline: none !important;
 }
@@ -39,7 +40,7 @@ textarea::placeholder {
   background-color: var(--hover-color) !important;
 }
 
-.chat-header{
+.chat-header {
   padding: 14px 0;
 }
 
@@ -56,4 +57,16 @@ textarea::placeholder {
   flex-direction: column;
   overflow-y: auto;
   flex-grow: 1;
+}
+
+.dropdown-menu {
+  --bs-dropdown-item-padding-y: 0rem !important;
+  inset: 12px -8px auto auto !important;
+  border: none !important;
+  min-width: 5rem !important;
+  border-radius: 8px !important;
+}
+
+.dropdown-item:hover{
+  background-color: transparent !important;
 }
